@@ -2,11 +2,13 @@
 
 namespace App;
 
+
 use Illuminate\Database\Eloquent\Model;
 
-class Player extends Model
+class Compare extends Model
 {
     protected $fillable = [
-        'name','color','card'
+        'name', 'color', 'card', 'round'
     ];
+
 }

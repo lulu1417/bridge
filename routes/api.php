@@ -13,7 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('bridge','BridgeController@distribute');
-Route::post('bridge','BridgeController@bid');
+Route::get('start','BridgeController@distribute');
+Route::post('start','BridgeController@bid');
+
+Route::get('switch','BridgeController@turnOver');
+
+Route::post('play','BridgeController@play');
+Route::get('play','BridgeController@compare');
+
 
 
