@@ -16,10 +16,13 @@ use Illuminate\Http\Request;
 Route::get('start','BridgeController@distribute');
 Route::post('start','BridgeController@bid');
 
-Route::get('switch','BridgeController@turnOver');
+Route::get('pile','BridgeController@turnOver');
+Route::get('card','BridgeController@card');
 
 Route::post('play','BridgeController@play');
-Route::get('play','BridgeController@compare');
+Route::post('compare','BridgeController@judge');
+
+
 
 
 

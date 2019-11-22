@@ -16,8 +16,9 @@ class CreateBidsTable extends Migration
         Schema::create('bids', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('player');
-            $table->string('trump');
+            $table->integer('trump');
             $table->integer('line');
+            $table->integer('isPass');
             $table->timestamps();
         });
     }

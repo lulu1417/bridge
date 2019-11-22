@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Bid extends Model
 {
     protected $fillable = [
-        'player','trump','line'
+        'player','trump','line','isPass'
     ];
 }

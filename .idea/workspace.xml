@@ -2,13 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="738a7214-79f1-4302-99b5-dccaa0de407f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Compare.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_083233_create_compares_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Card.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2019_11_22_021409_create_cards_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Bid.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Bid.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Compare.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Compare.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BaseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BaseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Player.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Player.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_21_070046_create_players_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_070046_create_players_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_21_073033_create_bids_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_073033_create_bids_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_21_083233_create_compares_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_083233_create_compares_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -159,6 +163,9 @@
       <workItem from="1574240638429" duration="83000" />
       <workItem from="1574240806130" duration="37000" />
       <workItem from="1574309828598" duration="22396000" />
+      <workItem from="1574385853212" duration="10205000" />
+      <workItem from="1574402057365" duration="627000" />
+      <workItem from="1574404435568" duration="7174000" />
     </task>
     <servers />
   </component>
@@ -170,7 +177,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
