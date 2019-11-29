@@ -4,12 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Card extends Model
+class Room extends Model
 {
     protected $fillable = [
-        'name', 'color', 'card'
+        'name', 'isFull'
     ];
-
     public function player()
     {
         return $this->belongsTo(Player::class, 'name', 'name');

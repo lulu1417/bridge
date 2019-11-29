@@ -12,13 +12,33 @@ use Illuminate\Support\Facades\DB;
 class BridgeController extends BaseController
 {
 
+    function login(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'name' => ['required'],
+            ]);
+            if(count(Player::all()) > 1 ){
+                return response()->json('the room is full.', 400);
+            }
+            Player::create([
+                'name' => $request->name,
+                'trick' => 0
+            ]);
+
+            return response()->json(Player::all(),200);
+
+        }catch (Exception $error){
+            return $this->sendError($error->getMessage(), 400);
+        }
+    }
+
     function distribute()
     {
-        DB::table('players')->truncate();
         DB::table('cards')->truncate();
         DB::table('bids')->truncate();
         DB::table('compares')->truncate();
-
 
         $suit = array("400", "300", "200", "100");
 
@@ -32,20 +52,20 @@ class BridgeController extends BaseController
         for ($i = 0; $i < 13; $i++) {
             $str_sec = explode(" ", $cards[$i]);
             Card::create([
-                'name' => 'Lulu',
+                'name' => Player::find(1)->name,
                 'color' => $str_sec[0],
                 'card' => $str_sec[1],
             ]);
 
         }
         Player::create([
-            'name' => 'Lulu',
+            'name' => Player::find(1)->name,
             'trick' => 0,
         ]);
         for ($i = 13; $i < 26; $i++) {
             $str_sec = explode(" ", $cards[$i]);
             Card::create([
-                'name' => '阿寶',
+                'name' => Player::find(2)->name,
                 'color' => $str_sec[0],
                 'card' => $str_sec[1],
                 'trick' => 0
@@ -53,7 +73,7 @@ class BridgeController extends BaseController
 
         }
         Player::create([
-            'name' => '阿寶',
+            'name' => 'Player::find(2)->name',
             'trick' => 0,
         ]);
         for ($i = 26; $i < 52; $i++) {
@@ -102,7 +122,6 @@ class BridgeController extends BaseController
                     ]);
                     return Bid::latest()->first();
                 }
-
 
             }
 
@@ -197,7 +216,6 @@ class BridgeController extends BaseController
                     ]);
                 }
 
-
             }
             $data['winner'] = $winner;
             $data['comparison'] = Compare::all();
@@ -218,11 +236,12 @@ class BridgeController extends BaseController
             if ($playerB->color == $trump) {
                 $colorB = 500;
                 $haveTrump = 1;
-            }if ($playerA->color == $trump) {
+            }
+            if ($playerA->color == $trump) {
                 $colorA = 500;
                 $haveTrump = 1;
             }
-            if($haveTrump){
+            if ($haveTrump) {
                 $colorA = 500;
             }
         }
@@ -236,32 +255,34 @@ class BridgeController extends BaseController
             $winner = $playerB;
             $loser = $playerA;
         }
-        Player::where('name', $winner->name)->first()->trick;
-        $num = Compare::where('round', $round)->where('priority', null)->get()->count();
-        if ($num != 0) {
-            $card = $this->turnOver();
-            $card->update([
-                'name' => $winner->name,
-            ]);
+        if(count(Compare::all()) < 13){
+            $num = Compare::where('round', $round)->where('priority', null)->get()->count();
+            if ($num != 0) {
+                $card = $this->turnOver();
+                $card->update([
+                    'name' => $winner->name,
+                ]);
 
-            $trick = Player::where('name', $winner->name)->first()->trick + 1;
+                $trick = Player::where('name', $winner->name)->first()->trick + 1;
 
-            $goal = $winner->goal;
-            if ($trick == $goal) {
-                $data['winner'] = $winner->name;
-                $date['message'] = "Game over.";
-                return $this->sendResponse($data, 200);;
+                $goal = $winner->goal;
+                if ($trick == $goal) {
+                    $data['winner'] = $winner->name;
+                    $date['message'] = "Game over.";
+                    return $this->sendResponse($data, 200);;
+                }
+                Player::where('name', $winner->name)->first()->update([
+                    'trick' => $trick,
+                ]);
+
+                $card = $this->turnOver();
+                $card->update([
+                    'name' => $loser->name,
+                ]);
+
             }
-            Player::where('name', $winner->name)->first()->update([
-                'trick' => $trick,
-            ]);
-
-            $card = $this->turnOver();
-            $card->update([
-                'name' => $loser->name,
-            ]);
-
         }
+
         return $winner;
     }
 
@@ -269,5 +290,9 @@ class BridgeController extends BaseController
     {
         return Card::all();
     }
-
+    function over()
+    {
+        DB::table('players')->truncate();
+        return response()->json('leaved');
+    }
 }

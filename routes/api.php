@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('login','BridgeController@login');
 Route::get('start','BridgeController@distribute');
 Route::post('start','BridgeController@bid');
 
@@ -21,6 +22,7 @@ Route::get('card','BridgeController@card');
 
 Route::post('play','BridgeController@play');
 Route::post('compare','BridgeController@judge');
+Route::delete('over','BridgeController@over');
 
 
 
