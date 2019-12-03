@@ -132,6 +132,9 @@ class BridgeController extends BaseController
 
     function play(Request $request)
     {
+//        dd(Player::find(2)->update([
+//            'trick' => 1
+//        ]));
         try {
             DB::beginTransaction();
             $request->validate([
@@ -304,12 +307,13 @@ class BridgeController extends BaseController
             ]);
 
         } else { //next phase
+            if(Player::find(1)->trick + Player::find(2)->trick < ($round-13)){
+                $trick = Player::where('name', $winner->name)->first()->trick + 1;
+                Player::where('name', $winner->name)->first()->update([
+                    'trick' => $trick,
+                ]);
+            }
 
-            $trick = Player::where('name', $winner->name)->first()->trick + 1;
-
-            Player::where('name', $winner->name)->first()->update([
-                'trick' => $trick,
-            ]);
         }
         return $winner;
     }
