@@ -19,7 +19,7 @@ class BridgeController extends BaseController
             $request->validate([
                 'name' => ['required'],
             ]);
-            if(count(Player::all()) > 1 ){
+            if (count(Player::all()) > 1) {
                 return response()->json('the room is full.', 400);
             }
             Player::create([
@@ -27,9 +27,9 @@ class BridgeController extends BaseController
                 'trick' => 0
             ]);
 
-            return response()->json(Player::all(),200);
+            return response()->json(Player::all(), 200);
 
-        }catch (Exception $error){
+        } catch (Exception $error) {
             return $this->sendError($error->getMessage(), 400);
         }
     }
@@ -157,30 +157,37 @@ class BridgeController extends BaseController
                 'round' => ['required'],
             ]);
 
-            $exist = Card::where('name', $request['name'])
-                ->where('color', $request['color'])
-                ->where('card', $request['card'])->count();
-            if ($exist) {
-                $card = Card::where('name', $request['name'])
+            $priority = Compare::where('name', $request->name)->latest()->first()->priority;
+            $lasterID = Compare::latest()->first()->id;
+            if ($priority == 1 && $lasterID % 2 == 0) {
+                $exist = Card::where('name', $request['name'])
                     ->where('color', $request['color'])
-                    ->where('card', $request['card']);
+                    ->where('card', $request['card'])->count();
+                if ($exist) {
+                    $card = Card::where('name', $request['name'])
+                        ->where('color', $request['color'])
+                        ->where('card', $request['card']);
 
-                Compare::create([
-                    'name' => $request['name'],
-                    'color' => $request['color'],
-                    'card' => $request['card'],
-                    'round' => $request['round'],
-                ]);
-                $card->update([
-                    'name' => 'discard',
-                ]);
-                $data = Compare::orderBy('id', 'desc')->get();
-                DB::commit();
-                return $data;
+                    Compare::create([
+                        'name' => $request['name'],
+                        'color' => $request['color'],
+                        'card' => $request['card'],
+                        'round' => $request['round'],
+                    ]);
+                    $card->update([
+                        'name' => 'discard',
+                    ]);
+                    $data = Compare::orderBy('id', 'desc')->get();
+                    DB::commit();
+                    return $data;
 
-            } else {
-                return $this->sendError("You don't have this card.", 400);
+                } else {
+                    return $this->sendError("You don't have this card.", 400);
+                }
+            }else{
+                return $this->sendError("Not your turn", 400);
             }
+
         } catch (Exception $error) {
             DB::rollback();
             return $this->sendError($error->getMessage(), 400);
@@ -255,7 +262,7 @@ class BridgeController extends BaseController
             $winner = $playerB;
             $loser = $playerA;
         }
-        if(count(Compare::all()) < 13){
+        if (count(Compare::all()) < 13) {
             $num = Compare::where('round', $round)->where('priority', null)->get()->count();
             if ($num != 0) {
                 $card = $this->turnOver();
@@ -290,6 +297,7 @@ class BridgeController extends BaseController
     {
         return Card::all();
     }
+
     function over()
     {
         DB::table('players')->truncate();
