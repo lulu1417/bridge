@@ -164,7 +164,6 @@ class BridgeController extends BaseController
                 }
             }
 
-
             $exist = Card::where('name', $request['name'])
                 ->where('color', $request['color'])
                 ->where('card', $request['card'])->count();
@@ -172,6 +171,14 @@ class BridgeController extends BaseController
                 $card = Card::where('name', $request['name'])
                     ->where('color', $request['color'])
                     ->where('card', $request['card']);
+
+                if($priority == 0){
+                    $first = Compare::latest()->first()->color;
+                    $sameColor = count(Card::where('name', $request['name'])->where('color', $first)->get());
+                    if($sameColor > 0 && $request['color']!= $first){
+                        return $this->sendError("Illegal play.", 400);
+                    }
+                }
 
                 Compare::create([
                     'name' => $request['name'],
