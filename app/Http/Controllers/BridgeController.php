@@ -83,12 +83,12 @@ class BridgeController extends BaseController
         try {
             $request->validate([
                 'name' => ['exists:cards'],
-                'trump' => ['required', 'max:400'],
-                'line' => ['required', 'integer', 'max:7']
+                'trump' => ['required', 'min:100','max:500'],
+                'line' => ['required', 'integer','max:7']
             ]);
             if (Bid::latest()->first()) {
-                $trump = Bid::latest()->first()->trump; //1,2,3,4
-                $line = Bid::latest()->first()->line; //10,20,30,40,50...
+                $trump = Bid::latest()->first()->trump; //100,200,300,400
+                $line = Bid::latest()->first()->line; //1,2,3,4,5...
                 $bid = $trump + $line * 1000;
                 $total = $request['line'] * 1000 + $request['trump'];
                 if ($bid > $total) {
