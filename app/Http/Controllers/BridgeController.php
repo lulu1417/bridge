@@ -20,7 +20,7 @@ class BridgeController extends BaseController
                 'name' => ['required'],
             ]);
             if (count(Player::all()) > 1) {
-                return response()->json('the room is full.', 400);
+                return $this->sendError("The room is full.", 1, 400);
             }
             Player::create([
                 'name' => $request->name,
@@ -83,7 +83,7 @@ class BridgeController extends BaseController
         try {
             $request->validate([
                 'name' => ['exists:cards'],
-                'trump' => ['required', 'min:100','max:500'],
+                'trump' => ['required','integer', 'min:100','max:500'],
                 'line' => ['required', 'integer','max:7']
             ]);
             if (Bid::latest()->first()) {
@@ -92,7 +92,7 @@ class BridgeController extends BaseController
                 $bid = $trump + $line * 1000;
                 $total = $request['line'] * 1000 + $request['trump'];
                 if ($bid > $total) {
-                    return $this->sendError("Illigal bid.", 422);
+                    return $this->sendError("Illigal bid.", 2,400);
                 } else if ($bid == $total) {
                     Bid::create([
                         'player' => $request['name'],
@@ -121,7 +121,7 @@ class BridgeController extends BaseController
             ]);
             return Bid::latest()->first();
         } catch (Exception $error) {
-            return $this->sendError($error->getMessage(), 400);
+            return $this->sendError($error->getMessage(), 99,400);
         }
     }
 
@@ -155,11 +155,11 @@ class BridgeController extends BaseController
 
                 if (count(Compare::all()) % 2 == 1) {
                     if ($priority == 1 || $priority == null) {
-                        return $this->sendError("Not your turn", 400);
+                        return $this->sendError("Not your turn", 3,400);
                     }
                 }else{
                     if ($priority == 0) {
-                        return $this->sendError("Not your turn", 400);
+                        return $this->sendError("Not your turn", 3,400);
                     }
                 }
             }
@@ -176,7 +176,7 @@ class BridgeController extends BaseController
                     $first = Compare::latest()->first()->color;
                     $sameColor = count(Card::where('name', $request['name'])->where('color', $first)->get());
                     if($sameColor > 0 && $request['color']!= $first){
-                        return $this->sendError("Illegal play.", 400);
+                        return $this->sendError("Illegal play.", 5,400);
                     }
                 }
 
@@ -194,12 +194,12 @@ class BridgeController extends BaseController
                 return $data;
 
             } else {
-                return $this->sendError("You don't have this card.", 400);
+                return $this->sendError("You don't have this card.", 4,400);
             }
 
         } catch (Exception $error) {
             DB::rollback();
-            return $this->sendError($error->getMessage(), 400);
+            return $this->sendError($error->getMessage(), 99,400);
         }
 
     }
@@ -256,7 +256,7 @@ class BridgeController extends BaseController
             $data['comparison'] = Compare::orderBy('id', 'DESC')->get();
             return $this->sendResponse($data, 200);
         } catch (Exception $error) {
-            return $this->sendError($error->getMessage(), 400);
+            return $this->sendError($error->getMessage(), 99,400);
         }
 
     }
@@ -325,17 +325,19 @@ class BridgeController extends BaseController
         return $winner;
     }
 
-
     function card()
     {
-        $data['piles num'] = count(Card::where('name', 'pile')->get());
-        $data['card'] = Card::all();
+        $first = Player::find(1)->name;
+        $data[$first] = Card::where('name',$first)->get();
+        $second = Player::find(2)->name;
+        $data[$second] = Card::where('name',$second)->get();
+        $data['trump'] = Bid::latest()->first()->trump;
         return response()->json($data);
     }
 
     function over()
     {
         DB::table('players')->truncate();
-        return response()->json('leaved');
+        return $this->sendResponse("leaved.",200);
     }
 }
