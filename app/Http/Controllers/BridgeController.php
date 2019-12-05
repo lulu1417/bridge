@@ -135,7 +135,7 @@ class BridgeController extends BaseController
                     $round = Compare::latest()->first()->round;
                 }
                 $priority = Compare::where('name', $request->name)->latest()->first()->priority;
-                if (Compare::latest()->first()->id == 27) {
+                if (Compare::latest()->first()->id == 26) {
                     if (Bid::latest()->first()->player != $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
