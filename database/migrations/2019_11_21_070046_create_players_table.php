@@ -16,6 +16,7 @@ class CreatePlayersTable extends Migration
         Schema::create('players', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('password');
             $table->integer('goal')->nullable();
             $table->integer('trick')->nullable();
             $table->timestamps();

@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Player extends Model
 {
     protected $fillable = [
-        'name', 'trick' ,'goal'
+        'name', 'password', 'trick' ,'goal'
+    ];
+    protected $hidden = [
+        'password',
     ];
 }

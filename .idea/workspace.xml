@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="738a7214-79f1-4302-99b5-dccaa0de407f" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/Judge.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BaseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BaseController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Player.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Player.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_21_070046_create_players_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_070046_create_players_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -161,7 +165,11 @@
       <workItem from="1574992666542" duration="4357000" />
       <workItem from="1575338967509" duration="956000" />
       <workItem from="1575340788390" duration="22010000" />
-      <workItem from="1575429452845" duration="2167000" />
+      <workItem from="1575429452845" duration="7127000" />
+      <workItem from="1575441811690" duration="2087000" />
+      <workItem from="1575451770643" duration="31000" />
+      <workItem from="1575455339858" duration="14176000" />
+      <workItem from="1575512028744" duration="610000" />
     </task>
     <servers />
   </component>

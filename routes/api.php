@@ -13,16 +13,21 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('login','BridgeController@login');
+Route::post('getIn','BridgeController@login');
+Route::post('login','BridgeController@back');
+Route::get('room','BridgeController@room');
+
 Route::get('start','BridgeController@distribute');
 Route::post('start','BridgeController@bid');
 
 Route::get('pile','BridgeController@turnOver');
-Route::get('card','BridgeController@card');
+Route::post('card','BridgeController@card');
 
 Route::post('play','BridgeController@play');
-Route::post('compare','BridgeController@judge');
+Route::get('compare','BridgeController@judge');
 Route::delete('over','BridgeController@over');
+
+Route::put('mod/{id}','BridgeController@modify');
 
 
 
