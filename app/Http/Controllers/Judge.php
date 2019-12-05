@@ -57,10 +57,6 @@ class Judge{
             $card->update([
                 'name' => $loser->name,
             ]);
-            $card = $this->turnOver();
-            $card->update([
-                'name' => $loser->name,
-            ]);
 
         } else { //next phase
             if (Player::find(1)->trick + Player::find(2)->trick < ($round - 13)) {

@@ -117,10 +117,14 @@ class BridgeController extends BaseController
                 $bid = $trump + $line * 1000;
                 $total = $request['line'] * 1000 + $request['trump'];
                 if ($request['name'] == $last) {
-                    return $this->sendError("Not your turn", 5, 400);
+                    $response['message'] = "Not your turn";
+                    $response['last'] = Bid::latest()->first();
+                    return $this->sendError($response, 5, 400);
                 }
                 if ($bid > $total) {
-                    return $this->sendError("Illigal bid.", 4, 400);
+                    $response['message'] = "Illigal bid";
+                    $response['last'] = Bid::latest()->first();
+                    return $this->sendError( $response, 4, 400);
                 } else if ($bid == $total) {
                     Bid::create([
                         'player' => $request['name'],
@@ -216,8 +220,7 @@ class BridgeController extends BaseController
                 ]);
                 DB::commit();
                 if (count(Compare::where('round', $round)->get()) == 2) {
-                    $
-                    $winner = $this->judge()->winner;
+                    $winner = $this->judge();
                 }
                 $data = Compare::orderBy('id', 'desc')->get();
 
@@ -291,17 +294,20 @@ class BridgeController extends BaseController
     function card(Request $request)
     {
         $data['pile\'s num'] = count(Card::where('name', 'pile')->get());
-        $data['round'] = Compare::latest()->first()->round;
-        $data['goal'] = Player::where('name', $request->name)->first()->goal;
-        $data['trick'] = Player::where('name', $request->name)->first()->trick;
-        if (count(Bid::all()) > 0) {
-            $data['trump'] = Bid::latest()->first();
+        $data['pile'] = Card::where('name', 'pile')->first();
+        if (count(Bid::all()) > 0 ) {
+            $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+        }
+        if( count(Compare::all()) > 0){
+            $data['compare'] = Compare::latest()->first()->only('round','name', 'color', 'card', 'priority');
         }
         $first = Player::find(1)->name;
 //        $data['player1'] = Card::where('name', $first)->get();
 //        $second = Player::find(2)->name;
 //        $data['player2'] = Card::where('name', $second)->get();
-        $data['card'] = Card::where('name', $request->name)->orderBy('color','ASC')->get();
+        $data['card'] = Card::where('name', $request->name)->orderBy('color','ASC')->orderBy('card', 'ASC')->get();
+        $data['goal'] = Player::where('name', $request->name)->first()->goal;
+        $data['trick'] = Player::where('name', $request->name)->first()->trick;
         return response()->json($data);
     }
 
