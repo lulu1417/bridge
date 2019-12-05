@@ -112,6 +112,7 @@ class BridgeController extends BaseController
             return $this->sendError($error->getMessage(), 99, 400);
         }
     }
+
     function play(Request $request)
     {
         try {
@@ -124,7 +125,7 @@ class BridgeController extends BaseController
             ]);
             if (count(Compare::all()) < 2) {
                 $round = 1;
-                if (Bid::latest()->first()->player == $request->name) {
+                if (count(Compare::all()) % 2 == 0 && Bid::latest()->first()->player == $request->name) {
                     return $this->sendError("Not your turn", 5, 400);
                 }
             } else { //validate priority
@@ -134,7 +135,7 @@ class BridgeController extends BaseController
                     $round = Compare::latest()->first()->round;
                 }
                 $priority = Compare::where('name', $request->name)->latest()->first()->priority;
-                if($round == 14){
+                if (Compare::latest()->first()->id == 27) {
                     if (Bid::latest()->first()->player != $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
