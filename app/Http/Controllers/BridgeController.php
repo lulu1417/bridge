@@ -19,7 +19,7 @@ class BridgeController extends BaseController
         try {
             $validator = validator::make($request->all(), [
                 'name' => ['required', 'unique:players'],
-                'password' => ['required'],
+//                'password' => ['required'],
             ]);
 
             if ($validator->fails()) {
@@ -30,11 +30,11 @@ class BridgeController extends BaseController
             }
             Player::create([
                 'name' => $request->name,
-                'password' => $request->password,
+                'password' => 123,
                 'trick' => 0
             ]);
             $result = Player::all();
-            if(count(Player::all()) == 2){
+            if (count(Player::all()) == 2) {
                 $this->distribute();
             }
             return response()->json($result, 200);
@@ -43,11 +43,13 @@ class BridgeController extends BaseController
             return $this->sendError($error->getMessage(), 400);
         }
     }
+
     function room()
     {
         $result = Player::all();
         return response()->json($result, 200);
     }
+
     function distribute()
     {
         DB::table('cards')->truncate();
@@ -145,7 +147,7 @@ class BridgeController extends BaseController
                 'line' => $request['line'],
                 'isPass' => 0,
             ]);
-            return Bid::latest()->first();
+            return Bid::all();
         } catch (Exception $error) {
             return $this->sendError($error->getMessage(), 99, 400);
         }
@@ -213,7 +215,7 @@ class BridgeController extends BaseController
                     'name' => 'discard',
                 ]);
                 DB::commit();
-                if(count(Compare::where('round',$round)->get()) == 2){
+                if (count(Compare::where('round', $round)->get()) == 2) {
                     $
                     $winner = $this->judge()->winner;
                 }
@@ -288,12 +290,18 @@ class BridgeController extends BaseController
 
     function card(Request $request)
     {
-        $data['card'] = Card::where('name', $request->name)->get();
+        $data['pile\'s num'] = count(Card::where('name', 'pile')->get());
+        $data['round'] = Compare::latest()->first()->round;
+        $data['goal'] = Player::where('name', $request->name)->first()->goal;
+        $data['trick'] = Player::where('name', $request->name)->first()->trick;
+        if (count(Bid::all()) > 0) {
+            $data['trump'] = Bid::latest()->first();
+        }
         $first = Player::find(1)->name;
 //        $data['player1'] = Card::where('name', $first)->get();
 //        $second = Player::find(2)->name;
 //        $data['player2'] = Card::where('name', $second)->get();
-        $data['trump'] = Bid::latest()->first();
+        $data['card'] = Card::where('name', $request->name)->orderBy('color','ASC')->get();
         return response()->json($data);
     }
 
@@ -302,12 +310,13 @@ class BridgeController extends BaseController
         DB::table('players')->truncate();
         return $this->sendResponse("leaved.", 200);
     }
+
     function back(Request $request)
     {
         $player = Player::where('name', $request->name)->where('password', $request->password)->first();
-        if($player){
-                    return response()->json($player, 200);
-        }else {
+        if ($player) {
+            return response()->json($player, 200);
+        } else {
             return $this->sendError("Wrong name or password！", 8, 400);
         }
     }
