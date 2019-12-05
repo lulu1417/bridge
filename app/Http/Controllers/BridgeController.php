@@ -124,7 +124,7 @@ class BridgeController extends BaseController
                 if ($bid > $total) {
                     $response['message'] = "Illigal bid";
                     $response['last'] = Bid::latest()->first();
-                    return $this->sendError( $response, 4, 400);
+                    return $this->sendError($response, 4, 400);
                 } else if ($bid == $total) {
                     Bid::create([
                         'player' => $request['name'],
@@ -294,18 +294,27 @@ class BridgeController extends BaseController
     function card(Request $request)
     {
         $data['pile\'s num'] = count(Card::where('name', 'pile')->get());
-        $data['pile'] = Card::where('name', 'pile')->first();
-        if (count(Bid::all()) > 0 ) {
+        if (count(Bid::all()) > 0) {
             $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+            if (Bid::latest()->first()->isPass == 1 && $data['pile\'s num'] > 0){
+                $data['pile'] = Card::where('name', 'pile')->first();
+            }else{
+                $data['pile'] = null;
+            }
+        }else{
+            $data['bid'] = null;
         }
-        if( count(Compare::all()) > 0){
-            $data['compare'] = Compare::latest()->first()->only('round','name', 'color', 'card', 'priority');
+        if (count(Compare::all()) > 0) {
+            $round = Compare::latest()->first()->round;
+            $data['compare'] = Compare::where('round', $round)->get();
+        }else{
+            $data['compare'] = null;
         }
         $first = Player::find(1)->name;
 //        $data['player1'] = Card::where('name', $first)->get();
 //        $second = Player::find(2)->name;
 //        $data['player2'] = Card::where('name', $second)->get();
-        $data['card'] = Card::where('name', $request->name)->orderBy('color','ASC')->orderBy('card', 'ASC')->get();
+        $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
         $data['goal'] = Player::where('name', $request->name)->first()->goal;
         $data['trick'] = Player::where('name', $request->name)->first()->trick;
         return response()->json($data);
