@@ -8,6 +8,7 @@ use App\Bid;
 use App\Card;
 use App\Player;
 use App\Compare;
+use Illuminate\Support\Facades\DB;
 
 class Judge{
     function compare($playerA, $playerB, $round)
@@ -128,5 +129,48 @@ class Judge{
         }
     }
 
+    function distribute()
+    {
+        DB::table('cards')->truncate();
+        DB::table('bids')->truncate();
+        DB::table('compares')->truncate();
+
+        $suit = array("400", "300", "200", "100");
+
+        for ($i = 0; $i < count($suit); $i++) {
+            for ($j = 2; $j <= 14; $j++) {
+                $cards[] = $suit[$i] . " " . $j;
+            }
+        }
+
+        shuffle($cards);
+        for ($i = 0; $i < 13; $i++) {
+            $str_sec = explode(" ", $cards[$i]);
+            Card::create([
+                'name' => Player::find(1)->name,
+                'color' => $str_sec[0],
+                'card' => $str_sec[1],
+            ]);
+
+        }
+        for ($i = 13; $i < 26; $i++) {
+            $str_sec = explode(" ", $cards[$i]);
+            Card::create([
+                'name' => Player::find(2)->name,
+                'color' => $str_sec[0],
+                'card' => $str_sec[1],
+            ]);
+
+        }
+        for ($i = 26; $i < 52; $i++) {
+            $str_sec = explode(" ", $cards[$i]);
+            Card::create([
+                'name' => 'pile',
+                'color' => $str_sec[0],
+                'card' => $str_sec[1],
+            ]);
+        }
+        return Card::all();
+    }
 
 }
