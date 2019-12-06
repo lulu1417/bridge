@@ -196,20 +196,20 @@ class BridgeController extends BaseController
 
     function card(Request $request)
     {
-        $data['pile\'s num'] = count(Card::where('name', 'pile')->get());
+        $data['pile\'s_num'] = count(Card::where('name', 'pile')->get());
         $data['room'] = count(Player::all());
         if (count(Bid::all()) > 0) {
             $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
-            if (Bid::latest()->first()->isPass == 1 && $data['pile\'s num'] > 0) {
+            if (Bid::latest()->first()->isPass == 1 && $data['pile\'s_num'] > 0) {
                 $data['pile'] = Card::where('name', 'pile')->first();
 
             } else {
                 $data['pile'] = null;
             }
-            if ($data['pile\'s num'] < 26 ){
-                $data['new card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
+            if ($data['pile\'s_num'] < 26 ){
+                $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
             }else {
-                $data['new card'] = null;
+                $data['new_card'] = null;
             }
         } else {
             $data['bid'] = null;
