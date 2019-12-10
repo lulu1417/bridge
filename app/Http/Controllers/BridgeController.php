@@ -26,7 +26,9 @@ class BridgeController extends BaseController
                 return $this->sendError("Name or password not given, or the name has been taken.", 1, 400);
             }
             if (count(Player::all()) > 1) {
-                return $this->sendError("The room is full.", 2, 400);
+                $result['message'] = "The room is full.";
+                $result['players'] = Player::all();
+                return response()->json($result, 400);
             }
             Player::create([
                 'name' => $request->name,
