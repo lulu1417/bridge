@@ -112,6 +112,9 @@ class BridgeController extends BaseController
             return $this->sendError($error->getMessage(), 99, 400);
         }
     }
+    function lastBid(){
+        return response()->json(Bid::latest()->first());
+    }
 
     function play(Request $request)
     {

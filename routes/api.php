@@ -19,6 +19,7 @@ Route::get('room','BridgeController@room');
 
 Route::get('start','BridgeController@distribute');
 Route::post('start','BridgeController@bid');
+Route::get('bid','BridgeController@lastBid');
 
 Route::get('pile','BridgeController@turnOver');
 Route::post('card','BridgeController@card');
