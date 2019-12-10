@@ -68,7 +68,7 @@ class BridgeController extends BaseController
                 $last = Bid::latest()->first()->player;
                 $bid = $trump + $line * 1000;
                 $total = $request['line'] * 1000 + $request['trump'];
-                if ($request['name'] == $last) {
+                if ($request['name'] == $last || Bid::latest()->first()->isPass == 1) {
                     $response['message'] = "Not your turn";
                     $response['last'] = Bid::latest()->first();
                     return $this->sendError($response, 5, 400);
@@ -114,10 +114,6 @@ class BridgeController extends BaseController
             return $this->sendError($error->getMessage(), 99, 400);
         }
     }
-    function lastBid(){
-        return response()->json(Bid::latest()->first());
-    }
-
     function play(Request $request)
     {
         try {
@@ -228,10 +224,14 @@ class BridgeController extends BaseController
         if (count(Compare::all()) > 0) {
             $round = Compare::latest()->first()->round;
             $data['compare'] = Compare::where('round', $round)->get();
+            if(Compare::latest()->first()->priority != null){
+                $round += 1;
+            }
 
         } else {
             $data['compare'] = null;
         }
+        $data['round'] = $round;
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
         return response()->json($data);
     }
