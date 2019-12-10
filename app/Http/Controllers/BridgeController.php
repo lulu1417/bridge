@@ -186,7 +186,7 @@ class BridgeController extends BaseController
                     $compare = new Judge;
                     $compare->judge();
                 }
-                $data = Compare::orderBy('id', 'desc')->get();
+                $data['compare'] = Compare::orderBy('id', 'desc')->get();
 
                 return $data;
 
@@ -205,6 +205,7 @@ class BridgeController extends BaseController
     {
         $data['room'] = Player::all();
         $data['pile\'s_num'] = count(Card::where('name', 'pile')->get());
+        $round = 0;
         if (count(Bid::all()) > 0) {
             $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
             if (Bid::latest()->first()->isPass == 1 && $data['pile\'s_num'] > 0) {
@@ -232,6 +233,11 @@ class BridgeController extends BaseController
             $data['compare'] = null;
         }
         $data['round'] = $round;
+        if(Player::find(1)->trick == Player::find(1)->goal || Player::find(1)->trick == Player::find(1)->goal){
+            $data['status'] = "game over";
+        }else{
+            $data['status'] = "in progress";
+        }
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
         return response()->json($data);
     }
