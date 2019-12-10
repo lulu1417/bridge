@@ -29,6 +29,7 @@ Route::get('compare','BridgeController@judge');
 Route::delete('over','BridgeController@over');
 
 Route::put('mod/{id}','BridgeController@modify');
+Route::put('reset','BridgeController@reset');
 
 
 

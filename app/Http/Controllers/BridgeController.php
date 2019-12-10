@@ -58,7 +58,7 @@ class BridgeController extends BaseController
             $validator = validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return $this->sendError(
-                    "Trump may not be greater than 500, or line may not be greater than 7",
+                    "Player's name not found. Trump may not be greater than 500, or line may not be greater than 7",
                     3, 400);
             }
 
@@ -109,7 +109,7 @@ class BridgeController extends BaseController
                 'line' => $request['line'],
                 'isPass' => 0,
             ]);
-            return Bid::all();
+            return Bid::latest()->first();
         } catch (Exception $error) {
             return $this->sendError($error->getMessage(), 99, 400);
         }
@@ -130,8 +130,14 @@ class BridgeController extends BaseController
             ]);
             if (count(Compare::all()) < 2) {
                 $round = 1;
-                if (count(Compare::all()) % 2 == 0 && Bid::latest()->first()->player == $request->name) {
-                    return $this->sendError("Not your turn", 5, 400);
+                if (count(Compare::all()) == 0) {
+                    if(Bid::latest()->first()->player == $request->name){
+                        return $this->sendError("Not your turn", 5, 400);
+                    }
+                }else{
+                    if(Compare::latest()->first()->name == $request->name){
+                        return $this->sendError("Not your turn", 5, 400);
+                    }
                 }
             } else { //validate priority
                 if (count(Compare::all()) % 2 == 0) {
@@ -201,8 +207,8 @@ class BridgeController extends BaseController
 
     function card(Request $request)
     {
+        $data['room'] = Player::all();
         $data['pile\'s_num'] = count(Card::where('name', 'pile')->get());
-        $data['room'] = count(Player::all());
         if (count(Bid::all()) > 0) {
             $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
             if (Bid::latest()->first()->isPass == 1 && $data['pile\'s_num'] > 0) {
@@ -227,8 +233,6 @@ class BridgeController extends BaseController
             $data['compare'] = null;
         }
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
-        $data['goal'] = Player::where('name', $request->name)->first()->goal;
-        $data['trick'] = Player::where('name', $request->name)->first()->trick;
         return response()->json($data);
     }
 
@@ -247,5 +251,11 @@ class BridgeController extends BaseController
             return $this->sendError("Wrong name or password！", 8, 400);
         }
     }
-
+    function reset(){
+        DB::table('bids')->truncate();
+        DB::table('compares')->truncate();
+        $judge = new Judge;
+        $judge->distribute();
+        return response()->json('reset.', 200);
+    }
 }
