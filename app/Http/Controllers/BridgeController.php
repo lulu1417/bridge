@@ -114,6 +114,7 @@ class BridgeController extends BaseController
             return $this->sendError($error->getMessage(), 99, 400);
         }
     }
+
     function play(Request $request)
     {
         try {
@@ -127,11 +128,11 @@ class BridgeController extends BaseController
             if (count(Compare::all()) < 2) {
                 $round = 1;
                 if (count(Compare::all()) == 0) {
-                    if(Bid::latest()->first()->player == $request->name){
+                    if (Bid::latest()->first()->player == $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
-                }else{
-                    if(Compare::latest()->first()->name == $request->name){
+                } else {
+                    if (Compare::latest()->first()->name == $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
                 }
@@ -146,16 +147,17 @@ class BridgeController extends BaseController
                     if (Bid::latest()->first()->player != $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
-                }
-                if (count(Compare::all()) % 2 == 1) {
-                    if ($priority == 1 || $priority == null) {
-                        return $this->sendError("Not your turn", 5, 400);
-                    }
                 } else {
-                    if ($priority == 0) {
+                    if (count(Compare::all()) % 2 == 1) {
+                        if (($priority == 1 && Compare::latest()->first()->id != 27) || $priority == null) {
+                            return $this->sendError("Not your turn", 5, 400);
+                        }
+                    } elseif ($priority == 0) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
+
                 }
+
             }
             $exist = Card::where('name', $request['name'])
                 ->where('color', $request['color'])
@@ -165,7 +167,7 @@ class BridgeController extends BaseController
                     ->where('color', $request['color'])
                     ->where('card', $request['card']);
 
-                if ($round > 1 && $priority == 0) {
+                if (($round == 1 && count(Compare::all()) > 0) || ($round > 1 && $priority == 0)) {
                     $first = Compare::latest()->first()->color;
                     $sameColor = count(Card::where('name', $request['name'])->where('color', $first)->get());
                     if ($sameColor > 0 && $request['color'] != $first) {
@@ -214,9 +216,9 @@ class BridgeController extends BaseController
             } else {
                 $data['pile'] = null;
             }
-            if ($data['pile\'s_num'] < 26 ){
+            if ($data['pile\'s_num'] < 26) {
                 $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
-            }else {
+            } else {
                 $data['new_card'] = null;
             }
         } else {
@@ -225,7 +227,7 @@ class BridgeController extends BaseController
         if (count(Compare::all()) > 0) {
             $round = Compare::latest()->first()->round;
             $data['compare'] = Compare::where('round', $round)->get();
-            if(Compare::latest()->first()->priority != null){
+            if (Compare::latest()->first()->priority != null) {
                 $round += 1;
             }
 
@@ -233,9 +235,9 @@ class BridgeController extends BaseController
             $data['compare'] = null;
         }
         $data['round'] = $round;
-        if(Player::find(1)->trick == Player::find(1)->goal || Player::find(1)->trick == Player::find(1)->goal){
+        if (Player::find(1)->trick == Player::find(1)->goal || Player::find(1)->trick == Player::find(1)->goal) {
             $data['status'] = "game over";
-        }else{
+        } else {
             $data['status'] = "in progress";
         }
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
@@ -257,7 +259,9 @@ class BridgeController extends BaseController
             return $this->sendError("Wrong name or password！", 8, 400);
         }
     }
-    function reset(){
+
+    function reset()
+    {
         DB::table('bids')->truncate();
         DB::table('compares')->truncate();
         $judge = new Judge;

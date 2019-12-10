@@ -4,6 +4,7 @@
     <list default="true" id="738a7214-79f1-4302-99b5-dccaa0de407f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Kernel.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -176,7 +177,11 @@
       <workItem from="1575958338712" duration="4087000" />
       <workItem from="1575964571683" duration="9000" />
       <workItem from="1575964878953" duration="97000" />
-      <workItem from="1575965865802" duration="24000" />
+      <workItem from="1575965865802" duration="304000" />
+      <workItem from="1575968280964" duration="2600000" />
+      <workItem from="1575973343335" duration="276000" />
+      <workItem from="1575974135268" duration="359000" />
+      <workItem from="1575991495881" duration="368000" />
     </task>
     <servers />
   </component>
