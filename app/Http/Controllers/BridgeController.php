@@ -252,7 +252,7 @@ class BridgeController extends BaseController
     {
         $player = Player::where('name', $request->name)->where('password', $request->password)->first();
         if ($player) {
-            return response()->json($player, 200);
+            return response()->json(Player::all(), 200);
         } else {
             return $this->sendError("Wrong name or password！", 8, 400);
         }
