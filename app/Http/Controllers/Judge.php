@@ -9,6 +9,7 @@ use App\Card;
 use App\Player;
 use App\Compare;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Judge{
     function compare($playerA, $playerB, $round)
