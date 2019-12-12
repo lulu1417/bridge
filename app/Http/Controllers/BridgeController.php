@@ -96,7 +96,7 @@ class BridgeController extends BaseController
                     $playerA->update([
                         'goal' => $goalA,
                     ]);
-                    return Bid::latest()->first();
+                    return Bid::all();
                 }
             } else {
                 if ($request['name'] != Player::find(1)->name) {
@@ -111,7 +111,7 @@ class BridgeController extends BaseController
                 'line' => $request['line'],
                 'isPass' => 0,
             ]);
-            return Bid::latest()->first();
+            return Bid::all();
         } catch (Exception $error) {
             return $this->sendError($error->getMessage(), 99, 400);
         }
