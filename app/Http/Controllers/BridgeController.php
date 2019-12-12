@@ -158,7 +158,6 @@ class BridgeController extends BaseController
                     } elseif ($priority == 0) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
-
                 }
 
             }
@@ -191,7 +190,7 @@ class BridgeController extends BaseController
                     $compare = new Judge;
                     $compare->judge();
                 }
-                $data['compare'] = Compare::orderBy('id', 'desc')->get();
+                $data = Compare::orderBy('id', 'desc')->get();
                 return $data;
 
             } else {
