@@ -185,11 +185,15 @@ class BridgeController extends BaseController
                 $card->update([
                     'name' => 'discard',
                 ]);
-                DB::commit();
+
                 if (count(Compare::where('round', $round)->get()) == 2) {
+                    Log::debug("compare");
                     $compare = new Judge;
                     $compare->judge();
+                }else{
+                    Log::debug("not yet compare");
                 }
+                DB::commit();
                 $data = Compare::orderBy('id', 'desc')->get();
                 return $data;
 

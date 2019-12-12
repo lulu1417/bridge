@@ -102,6 +102,7 @@ class Judge{
                 }
                 $winner = $this->compare($playerA, $playerB, $round)->name;
                 $num = Compare::where('round', $round)->where('priority', null)->get()->count();
+                Log::debug('$num = '.$num);
                 if ($num > 0) {
                     Compare::where('round', $round)->where('name', $winner)->first()->update([
                         'priority' => 1
