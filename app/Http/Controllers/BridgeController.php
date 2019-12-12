@@ -10,13 +10,14 @@ use App\Http\Controllers\Judge as Judge;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class BridgeController extends BaseController
 {
 
     function login(Request $request)
     {
         try {
+            Log::info($request->all());
             $validator = validator::make($request->all(), [
                 'name' => ['required', 'unique:players'],
                 'password' => ['required'],
@@ -50,6 +51,7 @@ class BridgeController extends BaseController
     function bid(Request $request)
     {
         try {
+            Log::info($request->all());
             $rules = [
                 'name' => ['exists:cards'],
                 'trump' => ['required', 'integer', 'min:100', 'max:500'],
@@ -118,6 +120,7 @@ class BridgeController extends BaseController
     function play(Request $request)
     {
         try {
+            Log::info($request->all());
             DB::beginTransaction();
 
             $request->validate([
@@ -204,6 +207,7 @@ class BridgeController extends BaseController
 
     function card(Request $request)
     {
+        Log::info($request->all());
         if(count(Player::all()) > 0){
             $data['status'] = "your turn";
             $data['room'] = Player::all();
@@ -280,6 +284,7 @@ class BridgeController extends BaseController
 
     function back(Request $request)
     {
+        Log::info($request->all());
         $player = Player::where('name', $request->name)->where('password', $request->password)->first();
         if ($player) {
             return response()->json(Player::all(), 200);
