@@ -103,7 +103,6 @@ class Judge{
                 $winner = $this->compare($playerA, $playerB, $round)->name;
                 $num = Compare::where('round', $round)->where('priority', null)->get()->count();
                 if ($num > 0) {
-
                     Compare::where('round', $round)->where('name', $winner)->first()->update([
                         'priority' => 1
                     ]);
@@ -111,15 +110,6 @@ class Judge{
                         'priority' => 0
                     ]);
                 }
-//                if (count(Compare::all()) > 27) {
-//                    $trick = Player::where('name', $winner)->first()->trick;
-//                    $goal = Player::where('name', $winner)->first()->goal;
-//                    if ($trick == $goal) {
-//                        $data['winner'] = $winner;
-//                        $data['message'] = "Game over.";
-//                        return response()->json($data, 200);
-//                    }
-//                }
             }
             $data['winner'] = $winner;
             $data['comparison'] = Compare::orderBy('id', 'DESC')->get();

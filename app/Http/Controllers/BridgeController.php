@@ -33,13 +33,13 @@ class BridgeController extends BaseController
             Player::create([
                 'name' => $request->name,
                 'password' => $request->password,
-                'trick' => 0
+                'trick' => 0,
             ]);
-            $result = Player::all();
             if (count(Player::all()) == 2) {
                 $judge = new Judge;
                 $judge->distribute();
             }
+            $result = Player::all();
             return response()->json($result, 200);
         } catch
         (Exception $error) {
@@ -189,7 +189,6 @@ class BridgeController extends BaseController
                     $compare->judge();
                 }
                 $data['compare'] = Compare::orderBy('id', 'desc')->get();
-
                 return $data;
 
             } else {
@@ -205,43 +204,72 @@ class BridgeController extends BaseController
 
     function card(Request $request)
     {
-        $data['room'] = Player::all();
-        $data['pile\'s_num'] = count(Card::where('name', 'pile')->get());
-        $round = 0;
-        if (count(Bid::all()) > 0) {
-            $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
-            if (Bid::latest()->first()->isPass == 1 && $data['pile\'s_num'] > 0) {
-                $data['pile'] = Card::where('name', 'pile')->first();
+        if(count(Player::all()) > 0){
+            $data['status'] = "your turn";
+            $data['room'] = Player::all();
+            if(count($data['room']) < 2){
+                $data['status'] = "not you";
+            }
+            $data['pile\'s_num'] = count(Card::where('name', 'pile')->get());
+            $round = 0;
+            if (count(Bid::all()) > 0) {
+                $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+                if (Bid::latest()->first()->isPass == 1 && $data['pile\'s_num'] > 0) {
+                    $data['pile'] = Card::where('name', 'pile')->first();
 
+                } else {
+                    $data['pile'] = null;
+                }
+                if ($data['pile\'s_num'] < 26) {
+                    $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
+                } else {
+                    $data['new_card'] = null;
+                }
             } else {
-                $data['pile'] = null;
+                $data['bid'] = null;
             }
-            if ($data['pile\'s_num'] < 26) {
-                $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
+            if (count(Compare::all()) > 0) {
+                $round = Compare::latest()->first()->round;
+                $data['compare'] = Compare::where('round', $round)->get();
+                if($round == 14){
+                     if(Bid::latest()->first()->player != $request->name){
+                         $data['status'] = "not you";
+                     }
+                }else{
+                    if (Compare::latest()->first()->priority != null) {
+                        if(Compare::where('priority', 1)->latest()->first()->name != $request->name){
+                            $data['status'] = "not you";
+                        }
+                        $round += 1;
+                    }else{
+                        if(Compare::latest()->first()->name == $request->name){
+                            $data['status'] = "not you";
+                        }
+                    }
+                }
             } else {
-                $data['new_card'] = null;
+                $data['compare'] = null;
+                if(count(Bid::all()) > 0){
+                    if(Bid::latest()->first()->player == $request->name){
+                        $data['status'] = "not you";
+                    }
+                }else{
+                    if(Player::find(1)->name != $request->name){
+                        $data['status'] = "not you";
+                    }
+                }
             }
-        } else {
-            $data['bid'] = null;
+            $data['round'] = $round;
+            if (Player::find(1)->trick === Player::find(1)->goal || Player::find(1)->trick === Player::find(1)->goal) {
+                $data['status'] = "game over";
+            }
+            $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
+            return response()->json($data);
+        }else{
+            return $this->sendError("the other player is left.", 9 , 400);
         }
-        if (count(Compare::all()) > 0) {
-            $round = Compare::latest()->first()->round;
-            $data['compare'] = Compare::where('round', $round)->get();
-            if (Compare::latest()->first()->priority != null) {
-                $round += 1;
-            }
 
-        } else {
-            $data['compare'] = null;
-        }
-        $data['round'] = $round;
-        if (Player::find(1)->trick == Player::find(1)->goal || Player::find(1)->trick == Player::find(1)->goal) {
-            $data['status'] = "game over";
-        } else {
-            $data['status'] = "in progress";
-        }
-        $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
-        return response()->json($data);
+
     }
 
     function over()
