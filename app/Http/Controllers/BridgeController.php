@@ -75,7 +75,7 @@ class BridgeController extends BaseController
                     $response['last'] = Bid::latest()->first();
                     return $this->sendError($response, 5, 400);
                 }
-                if ($bid > $total || $request['trump'] == $trump) {
+                if ($bid > $total || ($request['trump'] == $trump && $request['line'] != $line)) {
                     $response['message'] = "Illigal bid";
                     $response['last'] = Bid::latest()->first();
                     return $this->sendError($response, 4, 400);
@@ -237,7 +237,7 @@ class BridgeController extends BaseController
             if (count(Compare::all()) > 0) {
                 $round = Compare::latest()->first()->round;
                 $data['compare'] = Compare::where('round', $round)->get();
-                if($round == 14){
+                if($round == 13){
                      if(Bid::latest()->first()->player != $request->name){
                          $data['status'] = "not you";
                      }
