@@ -4,6 +4,11 @@
     <list default="true" id="738a7214-79f1-4302-99b5-dccaa0de407f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BridgeController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Judge.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Judge.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_21_070046_create_players_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_070046_create_players_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_21_083233_create_compares_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_21_083233_create_compares_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_11_22_021409_create_cards_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_11_22_021409_create_cards_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +190,13 @@
       <workItem from="1576123895114" duration="8284000" />
       <workItem from="1576137621259" duration="1328000" />
       <workItem from="1576140815476" duration="4343000" />
-      <workItem from="1576480282983" duration="734000" />
+      <workItem from="1576480282983" duration="790000" />
+      <workItem from="1576482731736" duration="5384000" />
+      <workItem from="1576552578890" duration="50000" />
+      <workItem from="1576736364822" duration="7644000" />
+      <workItem from="1576812806923" duration="3114000" />
+      <workItem from="1576815985538" duration="1084000" />
+      <workItem from="1576817396702" duration="11403000" />
     </task>
     <servers />
   </component>

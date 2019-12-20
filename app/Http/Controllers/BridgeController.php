@@ -7,10 +7,12 @@ use App\Compare;
 use App\Player;
 use App\Card;
 use App\Http\Controllers\Judge as Judge;
+use App\Room;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
 class BridgeController extends BaseController
 {
 
@@ -70,8 +72,12 @@ class BridgeController extends BaseController
                 $last = Bid::latest()->first()->player;
                 $bid = $trump + $line * 1000;
                 $total = $request['line'] * 1000 + $request['trump'];
-                if ($request['name'] == $last || Bid::latest()->first()->isPass == 1) {
-                    $response['message'] = "Not your turn";
+                if ( Bid::latest()->first()->isPass == 1) {
+                    $response['message'] = "is already deal";
+                    $response['last'] = Bid::latest()->first();
+                    return $this->sendError($response, 5, 400);
+                }elseif($request['name'] == $last){
+                    $response['message'] = "not your turn";
                     $response['last'] = Bid::latest()->first();
                     return $this->sendError($response, 5, 400);
                 }
@@ -99,7 +105,7 @@ class BridgeController extends BaseController
                     return Bid::all();
                 }
             } else {
-                if ($request['name'] != Player::find(1)->name) {
+                if ($request['name'] != Player::first()->name) {
                     $response['message'] = "Not your turn";
                     return $this->sendError($response, 5, 400);
                 }
@@ -122,7 +128,6 @@ class BridgeController extends BaseController
         try {
             Log::info($request->all());
             DB::beginTransaction();
-
             $request->validate([
                 'name' => ['exists:cards'],
                 'color' => ['required'],
@@ -135,24 +140,26 @@ class BridgeController extends BaseController
                         return $this->sendError("Not your turn", 5, 400);
                     }
                 } else {
+                    $compare_id = Compare::latest()->first()->id;
                     if (Compare::latest()->first()->name == $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
                 }
             } else { //validate priority
+                $compare_id = Compare::latest()->first()->id;
                 if (count(Compare::all()) % 2 == 0) {
                     $round = Compare::latest()->first()->round + 1;
                 } else {
                     $round = Compare::latest()->first()->round;
                 }
                 $priority = Compare::where('name', $request->name)->latest()->first()->priority;
-                if (Compare::latest()->first()->id == 26) {
+                if ( $compare_id == 26) {
                     if (Bid::latest()->first()->player != $request->name) {
                         return $this->sendError("Not your turn", 5, 400);
                     }
                 } else {
                     if (count(Compare::all()) % 2 == 1) {
-                        if (($priority == 1 && Compare::latest()->first()->id != 27) || $priority == null) {
+                        if (( $priority == 1 && $compare_id != 27) || $priority === null ) {
                             return $this->sendError("Not your turn", 5, 400);
                         }
                     } elseif ($priority == 0) {
@@ -169,7 +176,7 @@ class BridgeController extends BaseController
                     ->where('color', $request['color'])
                     ->where('card', $request['card']);
 
-                if (($round == 1 && count(Compare::all()) > 0) || ($round > 1 && $priority == 0)) {
+                if (count(Compare::all()) > 0 && ( ($round == 1 || ($compare_id % 2 == 1)  && $priority == 0))){
                     $first = Compare::latest()->first()->color;
                     $sameColor = count(Card::where('name', $request['name'])->where('color', $first)->get());
                     if ($sameColor > 0 && $request['color'] != $first) {
@@ -190,7 +197,7 @@ class BridgeController extends BaseController
                     Log::debug("compare");
                     $compare = new Judge;
                     $compare->judge();
-                }else{
+                } else {
                     Log::debug("not yet compare");
                 }
                 $data = Compare::orderBy('id', 'desc')->get();
@@ -204,84 +211,80 @@ class BridgeController extends BaseController
             DB::rollback();
             return $this->sendError($error->getMessage(), 99, 400);
         }
-
     }
 
-    function card(Request $request)
+    function status(Request $request)
     {
-        Log::info($request->all());
-        if(count(Player::all()) > 0){
-            $data['status'] = "your turn";
-            $data['room'] = Player::all();
-            if(count($data['room']) < 2){
-                $data['status'] = "not you";
-            }
-            $data['pile\'s_num'] = count(Card::where('name', 'pile')->get());
-            $round = 0;
-            if (count(Bid::all()) > 0) {
-                $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
-                if (Bid::latest()->first()->isPass == 1 && $data['pile\'s_num'] > 0) {
-                    $data['pile'] = Card::where('name', 'pile')->first();
-
-                } else {
-                    $data['pile'] = null;
-                }
-                if ($data['pile\'s_num'] < 26) {
-                    $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
-                } else {
-                    $data['new_card'] = null;
-                }
-            } else {
-                $data['bid'] = null;
-            }
+        $data['status'] = 'the room is empty';
+        $data['bid'] = '';
+        $data['pile'] = '';
+        $data["pile's_num"] = count(Card::where('name', 'pile')->get());
+        $data['new_card'] = '';
+        $data['compare'] = '';
+        $data['round'] = 0;
+        $data['room'] = Player::all();
+        $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
+        $num = count(Player::all());
+        if ($num == 1) {
+            $data['status'] = 'wait for another player';
+        } elseif ($num == 2) { //遊戲開始
+            $data['status'] = 'your turn';
             if (count(Compare::all()) > 0) {
+                if ($data['pile\'s_num'] > 0 && $data['pile\'s_num'] < 26) { //換牌階段
+                    $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
+                }
                 $round = Compare::latest()->first()->round;
                 $data['compare'] = Compare::where('round', $round)->get();
-                if($round == 13){
-                     if(Bid::latest()->first()->player != $request->name){
-                         $data['status'] = "not you";
-                     }
-                }else{
+                if ($round == 13) {
+                    if (Bid::latest()->first()->player != $request->name) {
+                        $data['status'] = "not you";
+                    }
+                } else {
                     if (Compare::latest()->first()->priority != null) {
-                        if(Compare::where('priority', 1)->latest()->first()->name != $request->name){
+                        if (Compare::where('priority', 1)->latest()->first()->name != $request->name) {
                             $data['status'] = "not you";
                         }
                         $round += 1;
-                    }else{
-                        if(Compare::latest()->first()->name == $request->name){
+                    } else {
+                        if (Compare::latest()->first()->name == $request->name) {
                             $data['status'] = "not you";
                         }
                     }
                 }
+                $data['round'] = $round;
+                $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+                $data['pile'] = Card::where('name', 'pile')->first();
+                if (Player::first()->trick === Player::first()->goal || Player::latest()->first()->trick === Player::latest()->first()->goal) {
+                    $data['status'] = "game over";
+                }
             } else {
-                $data['compare'] = null;
-                if(count(Bid::all()) > 0){
-                    if(Bid::latest()->first()->player == $request->name){
+                if (count(Bid::all()) > 0) { //喊牌階段
+                    if (Bid::latest()->first()->player == $request->name) {
                         $data['status'] = "not you";
                     }
-                }else{
-                    if(Player::find(1)->name != $request->name){
+                    $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+                } else { //正要開始喊牌
+                    if (Player::first()->name != $request->name) {
                         $data['status'] = "not you";
                     }
                 }
+                $data['pile'] = Card::where('name', 'pile')->first();
             }
-            $data['round'] = $round;
-            if (Player::find(1)->trick === Player::find(1)->goal || Player::find(1)->trick === Player::find(1)->goal) {
-                $data['status'] = "game over";
-            }
-            $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
-            return response()->json($data);
-        }else{
-            return $this->sendError("the other player is left.", 9 , 400);
         }
-
-
+        Log::info($data);
+        return response()->json($data);
     }
 
-    function over()
+    function leave(Request $request)
+    {
+        $player = Player::where('name', $request->name)->first();
+        $player->delete();
+        return $this->sendResponse("$player->name leaved.", 200);
+    }
+    function clear(Request $request)
     {
         DB::table('players')->truncate();
-        return $this->sendResponse("leaved.", 200);
+        return $this->sendResponse("room is cleared.", 200);
     }
 
     function back(Request $request)

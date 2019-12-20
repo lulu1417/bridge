@@ -17,9 +17,9 @@ class CreateComparesTable extends Migration
             $table->bigIncrements('id');
             $table->integer('round');
             $table->string('name');
-            $table->string('color');
-            $table->string('card');
-            $table->string('priority')->nullable();
+            $table->integer('color');
+            $table->integer('card');
+            $table->integer('priority')->nullable();
             $table->timestamps();
         });
     }

@@ -21,7 +21,6 @@ class Judge{
         $haveTrump = 0;
         if ($trump) {
             if ($playerB->color == $trump) {
-
                 $colorB = 500;
                 $haveTrump = 1;
             }
@@ -139,7 +138,7 @@ class Judge{
         for ($i = 0; $i < 13; $i++) {
             $str_sec = explode(" ", $cards[$i]);
             Card::create([
-                'name' => Player::find(1)->name,
+                'name' => Player::latest()->first()->name,
                 'color' => $str_sec[0],
                 'card' => $str_sec[1],
             ]);
@@ -148,7 +147,7 @@ class Judge{
         for ($i = 13; $i < 26; $i++) {
             $str_sec = explode(" ", $cards[$i]);
             Card::create([
-                'name' => Player::find(2)->name,
+                'name' => Player::first()->name,
                 'color' => $str_sec[0],
                 'card' => $str_sec[1],
             ]);

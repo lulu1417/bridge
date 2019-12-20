@@ -18,7 +18,7 @@ class CreatePlayersTable extends Migration
             $table->string('name')->unique();
             $table->string('password');
             $table->integer('goal')->nullable();
-            $table->integer('trick')->nullable();
+            $table->integer('trick');
             $table->timestamps();
         });
     }

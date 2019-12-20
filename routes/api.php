@@ -22,11 +22,12 @@ Route::post('start','BridgeController@bid');
 Route::get('bid','BridgeController@lastBid');
 
 Route::get('pile','BridgeController@turnOver');
-Route::post('card','BridgeController@card');
 
 Route::post('play','BridgeController@play');
 Route::get('compare','BridgeController@judge');
-Route::delete('over','BridgeController@over');
+Route::delete('clear','BridgeController@clear');
+Route::post('leave','BridgeController@leave');
+Route::post('card','BridgeController@status');
 
 Route::put('mod/{id}','BridgeController@modify');
 Route::put('reset','BridgeController@reset');
