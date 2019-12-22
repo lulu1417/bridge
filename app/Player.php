@@ -10,6 +10,6 @@ class Player extends Model
         'name', 'password', 'trick' ,'goal',
     ];
     protected $hidden = [
-        'password',
+        'password', 'created_at',  'updated_at'
     ];
 }

@@ -102,7 +102,7 @@ class BridgeController extends BaseController
                     $playerA->update([
                         'goal' => $goalA,
                     ]);
-                    return Bid::all();
+                    return Bid::orderBy('id', 'desc')->get();
                 }
             } else {
                 if ($request['name'] != Player::first()->name) {
@@ -215,20 +215,20 @@ class BridgeController extends BaseController
 
     function status(Request $request)
     {
-        $data['status'] = 'the room is empty';
-        $data['bid'] = '';
-        $data['pile'] = '';
+        $data['status'] = 'the_room_is_empty';
+        $data['bid'] = null;
+        $data['pile'] = null;
         $data["pile's_num"] = count(Card::where('name', 'pile')->get());
-        $data['new_card'] = '';
-        $data['compare'] = '';
+        $data['new_card'] = null;
+        $data['compare'] = null;
         $data['round'] = 0;
         $data['room'] = Player::all();
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
         $num = count(Player::all());
         if ($num == 1) {
-            $data['status'] = 'wait for another player';
+            $data['status'] = 'wait_for_another_player';
         } elseif ($num == 2) { //遊戲開始
-            $data['status'] = 'your turn';
+            $data['status'] = 'your_turn';
             if (count(Compare::all()) > 0) {
                 if ($data['pile\'s_num'] > 0 && $data['pile\'s_num'] < 26) { //換牌階段
                     $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
@@ -237,17 +237,17 @@ class BridgeController extends BaseController
                 $data['compare'] = Compare::where('round', $round)->get();
                 if ($round == 13) {
                     if (Bid::latest()->first()->player != $request->name) {
-                        $data['status'] = "not you";
+                        $data['status'] = "not_you";
                     }
                 } else {
                     if (Compare::latest()->first()->priority != null) {
                         if (Compare::where('priority', 1)->latest()->first()->name != $request->name) {
-                            $data['status'] = "not you";
+                            $data['status'] = "not_you";
                         }
                         $round += 1;
                     } else {
                         if (Compare::latest()->first()->name == $request->name) {
-                            $data['status'] = "not you";
+                            $data['status'] = "not_you";
                         }
                     }
                 }
@@ -255,17 +255,17 @@ class BridgeController extends BaseController
                 $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
                 $data['pile'] = Card::where('name', 'pile')->first();
                 if (Player::first()->trick === Player::first()->goal || Player::latest()->first()->trick === Player::latest()->first()->goal) {
-                    $data['status'] = "game over";
+                    $data['status'] = "game_over";
                 }
             } else {
                 if (count(Bid::all()) > 0) { //喊牌階段
                     if (Bid::latest()->first()->player == $request->name) {
-                        $data['status'] = "not you";
+                        $data['status'] = "not_you";
                     }
                     $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
                 } else { //正要開始喊牌
                     if (Player::first()->name != $request->name) {
-                        $data['status'] = "not you";
+                        $data['status'] = "not_you";
                     }
                 }
                 $data['pile'] = Card::where('name', 'pile')->first();
@@ -279,12 +279,12 @@ class BridgeController extends BaseController
     {
         $player = Player::where('name', $request->name)->first();
         $player->delete();
-        return $this->sendResponse("$player->name leaved.", 200);
+        return $this->sendResponse("$player->name"."_leaved", 200);
     }
     function clear(Request $request)
     {
         DB::table('players')->truncate();
-        return $this->sendResponse("room is cleared.", 200);
+        return $this->sendResponse("room_is_cleared", 200);
     }
 
     function back(Request $request)
