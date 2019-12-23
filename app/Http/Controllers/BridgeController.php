@@ -222,9 +222,9 @@ class BridgeController extends BaseController
         $data['new_card'] = null;
         $data['compare'] = null;
         $data['round'] = 0;
-        $data['room'] = Player::all();
+        $data['room'] = Player::all()->toArray();
         $data['room'] = array_map(function ($player) use ($request) {
-            $player['me'] = $player->name == $request->name;
+            $player['me'] = $player['name'] == $request->name;
             return $player;
         },$data['room']);
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
