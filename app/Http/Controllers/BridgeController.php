@@ -249,10 +249,10 @@ class BridgeController extends BaseController
                             $data['status'] = "not_you";
                         }
                         $round += 1;
-                    } else {
-                        if (Compare::latest()->first()->name == $request->name) {
-                            $data['status'] = "not_you";
-                        }
+                    } elseif (Compare::latest()->first()->name == $request->name) {
+                        $data['status'] = "not_you";
+                    } elseif (count(Player::where('name',$request->name)->get()) ==0) {
+                        $data['status'] = "not_you";
                     }
                 }
                 $data['round'] = $round;
@@ -288,12 +288,8 @@ class BridgeController extends BaseController
 
     function clear()
     {
-        if(count(Player::all()) > 0){
             DB::table('players')->truncate();
             return $this->sendResponse("room_is_cleared", 200);
-        }else{
-            return $this->sendError("you're not in the room", 10 , 400);
-        }
 
     }
 
