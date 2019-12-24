@@ -200,7 +200,7 @@ class BridgeController extends BaseController
                 } else {
                     Log::debug("not yet compare");
                 }
-                $data = Compare::orderBy('id', 'desc')->get();
+                $data = Compare::all();
                 return $data;
 
             } else {
