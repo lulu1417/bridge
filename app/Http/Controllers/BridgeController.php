@@ -248,12 +248,14 @@ class BridgeController extends BaseController
                         if (Compare::where('priority', 1)->latest()->first()->name != $request->name) {
                             $data['status'] = "not_you";
                         }
-                        $round += 1;
                     } elseif (Compare::latest()->first()->name == $request->name) {
                         $data['status'] = "not_you";
-                    } elseif (count(Player::where('name',$request->name)->get()) ==0) {
+                    } elseif (count(Player::where('name', $request->name)->get()) == 0) {
                         $data['status'] = "not_you";
                     }
+                }
+                if (count(Compare::where('round', $round)->get()) == 2) {
+                    $round += 1;
                 }
                 $data['round'] = $round;
                 $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
@@ -288,8 +290,8 @@ class BridgeController extends BaseController
 
     function clear()
     {
-            DB::table('players')->truncate();
-            return $this->sendResponse("room_is_cleared", 200);
+        DB::table('players')->truncate();
+        return $this->sendResponse("room_is_cleared", 200);
 
     }
 
