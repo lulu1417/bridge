@@ -239,7 +239,7 @@ class BridgeController extends BaseController
                 }
                 $round = Compare::latest()->first()->round;
                 $data['compare'] = Compare::all()->toArray();
-                if ($round == 13) {
+                if ($round == 13 && Compare::latest()->first()->id %2 == 0) {
                     if (Bid::latest()->first()->player != $request->name) {
                         $data['status'] = "not_you";
                     }
