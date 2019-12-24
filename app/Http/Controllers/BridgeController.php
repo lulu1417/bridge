@@ -238,7 +238,7 @@ class BridgeController extends BaseController
                     $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
                 }
                 $round = Compare::latest()->first()->round;
-                $data['compare'] = Compare::where('round', $round)->get()->toArray();
+                $data['compare'] = Compare::all()->toArray();
                 if ($round == 13) {
                     if (Bid::latest()->first()->player != $request->name) {
                         $data['status'] = "not_you";
