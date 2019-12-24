@@ -221,7 +221,7 @@ class BridgeController extends BaseController
         $data["pile's_num"] = count(Card::where('name', 'pile')->get());
         $data['new_card'] = null;
         $data['compare'] = null;
-        $data['round'] = 0;
+        $data['round'] = 1;
         $data['room'] = Player::all()->toArray();
         $data['room'] = array_map(function ($player) use ($request) {
             $player['me'] = $player['name'] == $request->name;
