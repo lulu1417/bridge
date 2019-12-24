@@ -72,11 +72,11 @@ class BridgeController extends BaseController
                 $last = Bid::latest()->first()->player;
                 $bid = $trump + $line * 1000;
                 $total = $request['line'] * 1000 + $request['trump'];
-                if ( Bid::latest()->first()->isPass == 1) {
+                if (Bid::latest()->first()->isPass == 1) {
                     $response['message'] = "is already deal";
                     $response['last'] = Bid::latest()->first();
                     return $this->sendError($response, 5, 400);
-                }elseif($request['name'] == $last){
+                } elseif ($request['name'] == $last) {
                     $response['message'] = "not your turn";
                     $response['last'] = Bid::latest()->first();
                     return $this->sendError($response, 5, 400);
@@ -153,13 +153,13 @@ class BridgeController extends BaseController
                     $round = Compare::latest()->first()->round;
                 }
                 $priority = Compare::where('name', $request->name)->latest()->first()->priority;
-                if ( $compare_id == 26) {
+                if ($compare_id == 26) {
                     if (Bid::latest()->first()->player != $request->name) {
                         return $this->sendError("Not your turn.", 5, 400);
                     }
                 } else {
                     if (count(Compare::all()) % 2 == 1) {
-                        if (( $priority == 1 && $compare_id != 27) || $priority === null ) {
+                        if (($priority == 1 && $compare_id != 27) || $priority === null) {
                             return $this->sendError("Not your turn", 5, 400);
                         }
                     } elseif ($priority == 0) {
@@ -176,7 +176,7 @@ class BridgeController extends BaseController
                     ->where('color', $request['color'])
                     ->where('card', $request['card']);
 
-                if (count(Compare::all()) > 0 && ( ($round == 1 || ($compare_id % 2 == 1)  && $priority == 0))){
+                if (count(Compare::all()) > 0 && (($round == 1 || ($compare_id % 2 == 1) && $priority == 0))) {
                     $first = Compare::latest()->first()->color;
                     $sameColor = count(Card::where('name', $request['name'])->where('color', $first)->get());
                     if ($sameColor > 0 && $request['color'] != $first) {
@@ -226,7 +226,7 @@ class BridgeController extends BaseController
         $data['room'] = array_map(function ($player) use ($request) {
             $player['me'] = $player['name'] == $request->name;
             return $player;
-        },$data['room']);
+        }, $data['room']);
         $data['card'] = Card::where('name', $request->name)->orderBy('color', 'ASC')->orderBy('card', 'ASC')->get();
         $num = count(Player::all());
         if ($num == 1) {
@@ -238,7 +238,7 @@ class BridgeController extends BaseController
                     $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
                 }
                 $round = Compare::latest()->first()->round;
-                $data['compare'] = Compare::where('round', $round)->get();
+                $data['compare'] = Compare::where('round', $round)->get()->toArray();
                 if ($round == 13) {
                     if (Bid::latest()->first()->player != $request->name) {
                         $data['status'] = "not_you";
@@ -283,12 +283,18 @@ class BridgeController extends BaseController
     {
         $player = Player::where('name', $request->name)->first();
         $player->delete();
-        return $this->sendResponse("$player->name"."_leaved", 200);
+        return $this->sendResponse("$player->name" . "_leaved", 200);
     }
-    function clear(Request $request)
+
+    function clear()
     {
-        DB::table('players')->truncate();
-        return $this->sendResponse("room_is_cleared", 200);
+        if(count(Player::all()) > 0){
+            DB::table('players')->truncate();
+            return $this->sendResponse("room_is_cleared", 200);
+        }else{
+            return $this->sendError("you're not in the room", 10 , 400);
+        }
+
     }
 
     function back(Request $request)
