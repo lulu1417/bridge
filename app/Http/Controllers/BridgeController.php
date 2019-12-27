@@ -177,7 +177,7 @@ class BridgeController extends BaseController
                     ->where('card', $request['card']);
 
                 if (count(Compare::all()) > 0 && (($round == 1 || ($compare_id % 2 == 1) && $priority == 0))) {
-                    $first = Compare::latest()->first()->color;
+                    $first = Compare::latest('id')->first()->color;
                     $sameColor = count(Card::where('name', $request['name'])->where('color', $first)->get());
                     if ($sameColor > 0 && $request['color'] != $first) {
                         return $this->sendError("Illegal play.", 6, 400);
@@ -237,18 +237,18 @@ class BridgeController extends BaseController
                 if ($data['pile\'s_num'] > 0 && $data['pile\'s_num'] < 26) { //換牌階段
                     $data['new_card'] = Card::where('name', $request->name)->orderBy('id', 'DESC')->first();
                 }
-                $round = Compare::latest()->first()->round;
+                $round = Compare::latest('id')->first()->round;
                 $data['compare'] = Compare::all()->toArray();
-                if ($round == 13 && Compare::latest()->first()->id %2 == 0) {
-                    if (Bid::latest()->first()->player != $request->name) {
+                if ($round == 13 && Compare::latest('id')->first()->id %2 == 0) {
+                    if (Bid::latest('id')->first()->player != $request->name) {
                         $data['status'] = "not_you";
                     }
                 } else {
-                    if (Compare::latest()->first()->priority != null) {
+                    if (Compare::latest('id')->first()->priority != null) {
                         if (Compare::where('priority', 1)->latest()->first()->name != $request->name) {
                             $data['status'] = "not_you";
                         }
-                    } elseif (Compare::latest()->first()->name == $request->name) {
+                    } elseif (Compare::latest('id')->first()->name == $request->name) {
                         $data['status'] = "not_you";
                     } elseif (count(Player::where('name', $request->name)->get()) == 0) {
                         $data['status'] = "not_you";
@@ -258,17 +258,17 @@ class BridgeController extends BaseController
                     $round += 1;
                 }
                 $data['round'] = $round;
-                $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+                $data['bid'] = Bid::latest('id')->first()->only('player', 'trump', 'line', 'isPass');
                 $data['pile'] = Card::where('name', 'pile')->first();
-                if (Player::first()->trick === Player::first()->goal || Player::latest()->first()->trick === Player::latest()->first()->goal) {
+                if (Player::first()->trick === Player::first()->goal || Player::latest('id')->first()->trick === Player::latest('id')->first()->goal) {
                     $data['status'] = "game_over";
                 }
             } else {
                 if (count(Bid::all()) > 0) { //喊牌階段
-                    if (Bid::latest()->first()->player == $request->name) {
+                    if (Bid::latest('id')->first()->player == $request->name) {
                         $data['status'] = "not_you";
                     }
-                    $data['bid'] = Bid::latest()->first()->only('player', 'trump', 'line', 'isPass');
+                    $data['bid'] = Bid::latest('id')->first()->only('player', 'trump', 'line', 'isPass');
                 } else { //正要開始喊牌
                     if (Player::first()->name != $request->name) {
                         $data['status'] = "not_you";
